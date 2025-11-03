@@ -32,23 +32,34 @@
   const contenedorDinos = document.getElementById("contenedorDinos5"); 
   let listaDinosaurios = []; 
 
-  async function obtenerDinosaurios() {
-    try {
-      const respuestaAPI = await fetch("https://dinoapi.brunosouzadev.com/api/dinosaurs"); 
-      const datosAPI = await respuestaAPI.json(); 
-      listaDinosaurios = datosAPI
-        .filter(dino => dino.image)
-        .map(dino => ({
-          nombre: dino.name,                  
-          descripcion: dino.description || "Descripción no disponible.", 
-          imagen: dino.image                  
-        }));
+async function obtenerDinosaurios() {
+  try {
+    const respuestaAPI = await fetch("https://dinoapi.brunosouzadev.com/api/dinosaurs");
+    const datosAPI = await respuestaAPI.json();
 
-      mostrarDinosaurios(listaDinosaurios); 
-    } catch (error) {
-      console.error("Error al obtener dinosaurios:", error); 
-      contenedorDinos.innerHTML = "<p>Error al cargar dinosaurios.</p>"; 
-    }
+    listaDinosaurios = datosAPI
+      .filter(dino => dino.image)
+      .map(dino => {
+        let urlImagen = dino.image;
+
+        if (!urlImagen.startsWith("http")) {
+          urlImagen = `https://dinoapi.brunosouzadev.com/images/${urlImagen}`;
+        }
+
+        return {
+          nombre: dino.name,
+          descripcion: dino.description || "Descripción no disponible.",
+          imagen: urlImagen
+        };
+      });
+
+    mostrarDinosaurios(listaDinosaurios);
+  } catch (error) {
+    console.error("Error al obtener dinosaurios:", error);
+    contenedorDinos.innerHTML = "<p>Error al cargar dinosaurios.</p>";
+  }
+}
+
   }
 
   function mostrarDinosaurios(lista) {
@@ -87,3 +98,4 @@
 
 </body>
 </html>
+
