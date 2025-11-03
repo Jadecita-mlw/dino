@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explorador de Dinosaurios 🦖</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="modo-claro">
+
+<header class="barra">
+  <h1>Explorador de Dinosaurios</h1>
+  <div class="botones">
+    <button id="botonClaro1">Modo Claro ☀️</button>   
+    <button id="botonOscuro2">Modo Oscuro 🌙</button>
+    <button id="botonVerde3">Modo Verde 🌿</button>  
+  </div>
+</header>
+
+<section class="buscador">
+  <input type="text" id="inputBusqueda4" placeholder="Buscar dinosaurio por nombre..."> <!-- 4️⃣ -->
+</section>
+
+<main id="contenedorDinos5" class="rejilla"></main> 
+
+<script>
+
+  const botonModoClaro = document.getElementById("botonClaro1");   
+  const botonModoOscuro = document.getElementById("botonOscuro2"); 
+  const botonModoVerde = document.getElementById("botonVerde3");   
+  const inputBusqueda = document.getElementById("inputBusqueda4"); 
+  const contenedorDinos = document.getElementById("contenedorDinos5"); 
+  let listaDinosaurios = []; 
+
+  async function obtenerDinosaurios() {
+    try {
+      const respuestaAPI = await fetch("https://dinoapi.brunosouzadev.com/api/dinosaurs"); 
+      const datosAPI = await respuestaAPI.json(); 
+      listaDinosaurios = datosAPI
+        .filter(dino => dino.image)
+        .map(dino => ({
+          nombre: dino.name,                  
+          descripcion: dino.description || "Descripción no disponible.", 
+          imagen: dino.image                  
+        }));
+
+      mostrarDinosaurios(listaDinosaurios); 
+    } catch (error) {
+      console.error("Error al obtener dinosaurios:", error); 
+      contenedorDinos.innerHTML = "<p>Error al cargar dinosaurios.</p>"; 
+    }
+  }
+
+  function mostrarDinosaurios(lista) {
+    contenedorDinos.innerHTML = ""; 
+
+    if (lista.length === 0) { 
+      contenedorDinos.innerHTML = "<p>No se encontraron dinosaurios.</p>"; 
+      return;
+    }
+
+    lista.forEach((dino, index) => { 
+      const tarjetaDino = document.createElement("div"); 
+      tarjetaDino.className = "tarjeta"; 
+      tarjetaDino.innerHTML = `
+        <img src="${dino.imagen}" alt="${dino.nombre}">
+        <h3>${dino.nombre}</h3>
+        <div class="descripcion">${dino.descripcion}</div>
+      `;
+
+      contenedorDinos.appendChild(tarjetaDino); 
+    });
+  }
+
+  inputBusqueda.addEventListener("input", () => {
+    const textoBuscado = inputBusqueda.value.toLowerCase(); 
+    const listaFiltrada = listaDinosaurios.filter(dino => dino.nombre.toLowerCase().includes(textoBuscado)); 
+    mostrarDinosaurios(listaFiltrada);
+  });
+
+  botonModoClaro.addEventListener("click", () => document.body.className = "modo-claro");  // 34️⃣ Modo claro
+  botonModoOscuro.addEventListener("click", () => document.body.className = "modo-oscuro"); // 35️⃣ Modo oscuro
+  botonModoVerde.addEventListener("click", () => document.body.className = "modo-verde");   // 36️⃣ Modo verde
+
+  obtenerDinosaurios(); 
+</script>
+
+</body>
+</html>
